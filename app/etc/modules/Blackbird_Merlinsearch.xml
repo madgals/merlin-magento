@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Blackbird_Merlinsearch>
+            <active>true</active>
+            <codePool>community</codePool>
+            <version>0.9</version>
+            <depends>
+                <Mage_CatalogSearch />
+            </depends>
+        </Blackbird_Merlinsearch>
+    </modules>
+</config>

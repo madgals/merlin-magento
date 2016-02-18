@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <block type="core/text" name="typeaheadcss">
+                <action method="setText">
+                    <text><![CDATA[<link href="https://s3.amazonaws.com/assets.blackbird.am/merlin-typeahead-2.0.0.min.css" rel="stylesheet" type="text/css">]]></text>
+                </action>
+            </block>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template" template="merlinsearch/typeahead.phtml"/>
+        </reference>
+    </default>
+    
+    <!--
+    <catalog_product_view>
+        <reference name="content">
+            <block type="core/text" name="vrec_heading">
+                <action method="setText">
+                    <text><![CDATA[<h1>Similar Products</h1>]]></text>
+                </action>
+            </block>
+            <block type="merlinsearch/vrec_list" name="vrec_list" template="catalog/product/list.phtml">
+                <action method="setColumnCount"><count>5</count></action>
+            </block>
+        </reference>
+    </catalog_product_view>
+    -->
+</layout>
