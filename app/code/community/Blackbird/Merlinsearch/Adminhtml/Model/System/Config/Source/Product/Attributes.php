@@ -1,12 +1,11 @@
 <?php
 
-class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attributes{
+function compare_label($a, $b) {
+        return strnatcmp($a["label"], $b['label']);
+}
 
-	/*public function toOptionArray()
-    	{   
-        	return Mage::app()->getLocale()->getOptionCountries();
-    	} */
-		
+class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attributes{
+	
 	public function toOptionArray(){
 	$options = array();
 	$entityTypeId = Mage::getModel('eav/entity_type')->loadByCode('catalog_product')->getEntityTypeId();
@@ -19,11 +18,13 @@ class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attrib
 			$item['label'] = $attribute->getFrontendLabel();
 		}
 		else{
-			$item['label'] = $attribute->getAttributeCode();
+            //$item['label'] = $attribute->getAttributeCode();
+            continue;
 		}
 		$options[] = $item;
 	}
 	$options[] = array('value' => None, 'label' => 'None');
-	return $options;
+    usort($options, compare_label);
+    return $options;
 	}
 }		

@@ -62,7 +62,6 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     public function loadVrec(){
         $engine = $this->getMerlinEngine();
         $v = new \Merlin\Vrec($this->_vrecId, null, $this->_vrecNum);
-        //Mage::log($v->__toString());
         $r = $engine->vrec($v);
         
         if(!isset($r->results)){
@@ -70,7 +69,6 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
         
         $this->_totalCount = $r->results->numfound;
-        //$col = array();
         foreach ($r->results->hits as $prod) {
             $bprod = $this->translate($prod);
             $this->_items[$bprod->getEntityId()] = $bprod;
@@ -112,32 +110,30 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
         $s->setNum($limit);
         $page = $this->getCurPage();
-        //Mage::log('load ' . $page);
         if (isset($page) && $page > 1) {
             $s->setStart(($page - 1) * $limit);
         }
     
-        //DEVIN's Changes remove this parent_id
-	$s->setGroup(new \Merlin\Group('parent_id'));
+	    $s->setGroup(new \Merlin\Group('parent_id'));
 
 
-	foreach ($this->_facetableHistAttributes as $att => $val){
-	    if (isset($this->_attributeFiltersMax[$att])) {
-		$s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMin[$att]));
-		$s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMax[$att]));
-	    } else {
-		Mage::log($val);
-		$s->addFacet(new \merlin\HistFacet($att, $val[0], $val[1], $val[2]));	
-	    }
-	}
-
-	foreach ($this->_facetableEnumAttributes as $att) {
-            if (isset($this->_attributeEnumFilters[$att])) {
-                $s->addFilter(new \Merlin\Filter($att, '=', $this->_attributeFilters[$att]));
+        foreach ($this->_facetableHistAttributes as $att => $val){
+            if (isset($this->_attributeFiltersMax[$att])) {
+            $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMin[$att]));
+            $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMax[$att]));
             } else {
-                $s->addFacet(new \Merlin\EnumFacet($att, 5));
+            Mage::log($val);
+            $s->addFacet(new \merlin\HistFacet($att, $val[0], $val[1], $val[2]));	
             }
         }
+
+        foreach ($this->_facetableEnumAttributes as $att) {
+                if (isset($this->_attributeEnumFilters[$att])) {
+                    $s->addFilter(new \Merlin\Filter($att, '=', $this->_attributeFilters[$att]));
+                } else {
+                    $s->addFacet(new \Merlin\EnumFacet($att, 5));
+                }
+            }
 
         if (isset($this->_orderBy)) {
             $s->addSort(new \Merlin\Sort($this->_orderBy, $this->_orderDir));
@@ -222,19 +218,14 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     }
 
     function setPriceFilterMin($_priceFilter) {
-        //$this->_priceFilterMin = $_priceFilter;
         $this->_attributeFiltersMin['price'] = $_priceFilter;
     }
 
     function setPriceFilterMax($_priceFilter) {
-        //$this->_priceFilterMax = $_priceFilter;
-	$this->_attributeFiltersMax['price'] = $_priceFilter;
+	    $this->_attributeFiltersMax['price'] = $_priceFilter;
     }
 
     function addFacetableAttribute($_facetableAttribute) {
-        /*if ($_facetableAttribute == 'price') {
-                return;
-            }*/
         $this->_facetableEnumAttributes[] = $_facetableAttribute;
     }
     
@@ -250,66 +241,3 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
 
 }
 
-/*
-      (
-      [entity_id] => 402
-      [entity_type_id] => 4
-      [attribute_set_id] => 13
-      [type_id] => configurable
-      [sku] => msj000c
-      [has_options] => 1
-      [required_options] => 1
-      [created_at] => 2013-03-05 07:25:10
-      [updated_at] => 2013-03-20 17:58:34
-      [relevance] => 0.0000
-      [price] => 190.0000
-      [tax_class_id] => 2
-      [final_price] => 190.0000
-      [minimal_price] => 190.0000
-      [min_price] => 190.0000
-      [max_price] => 190.0000
-      [tier_price] =>
-      [cat_index_position] => 30010
-      [name] => French Cuff Cotton Twill Oxford
-      [small_image] => /m/s/msj000t_2.jpg
-      [thumbnail] => /m/s/msj000t_2.jpg
-      [url_key] => french-cuff-cotton-twill-oxford
-      [image_label] =>
-      [small_image_label] =>
-      [thumbnail_label] =>
-      [msrp_enabled] => 2
-      [msrp_display_actual_price_type] => 4
-      [short_description] => Made with wrinkle resistant cotton twill, this French-cuffed luxury dress shirt is perfect for Business Class frequent flyers.
-      [special_price] =>
-      [msrp] =>
-      [news_from_date] =>
-      [news_to_date] =>
-      [special_from_date] =>
-      [special_to_date] =>
-      [status] => 1
-      [do_not_use_category_id] => 1
-      [request_path] => french-cuff-cotton-twill-oxford-570.html
-      [is_salable] => 1
-      [stock_item] => Varien_Object Object
-      (
-      [_data:protected] => Array
-      (
-      [is_in_stock] => 1
-      )
-
-      [_hasDataChanges:protected] =>
-      [_origData:protected] =>
-      [_idFieldName:protected] =>
-      [_isDeleted:protected] =>
-      [_oldFieldsMap:protected] => Array
-      (
-      )
-
-      [_syncFieldsMap:protected] => Array
-      (
-      )
-
-      )
-
-      )
-     */

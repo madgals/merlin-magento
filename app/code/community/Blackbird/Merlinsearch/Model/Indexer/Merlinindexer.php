@@ -138,8 +138,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         //Mage::log(Mage::app()->getStore()->getId());
 		
     	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
-	//$attributes = $this->_mapping->getProductAttributesList();
-	$attributes = $mapping->getProductAttributesList();
+	    $attributes = $mapping->getProductAttributesList();
         //$products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
         $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
         //$products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
@@ -161,42 +160,23 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
             $data = array();
             foreach ($products as $prod) {
-                //$product = Mage::getModel('catalog/product')->load($prod->getId());
 
-                if ($prod->isConfigurable()) {
-                    $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
+                if ($prod->isSuper()) {
+                    $childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
                     foreach ($childProducts as $child) {
                         $data[] = $this->product2array($child, $prod);
                         $productsLoaded++;
                     }
-                } else if ($prod->isSuper()){continue;}
-		else {
+                } else {
                     $data[] = $this->product2array($prod);
                     $productsLoaded++;
                 }
-
-
-//                $arr = $prod->toArray();
-//                foreach ($arr as $key => $value) {
-//                    Mage::log("$key => $value");
-//                }
-                //Mage::log('  $data: ' . print_r($data, true));
-                //break 2;
             }
 
             $c = new \Merlin\Crud();
             $c->addSubject(array('data' => $data));
-	    //Mage::log($data);
-	    //Mage::log($c);
-//            if ($id == null) {
-                $r = $merlin->upload($c);
-		Mage::log($r);
-//            } else {
-//                $r = $merlin->update($c);
-//            }
-            //Mage::log('  crud: ' . print_r($r, true));
-            //Mage::log('  $data: ' . print_r($data, true));
-            //break;
+            $r = $merlin->upload($c);
+		    Mage::log($r);
 
             $currentPage++;
             //clear collection and free memory
@@ -226,47 +206,12 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	return null;
     }
 
-    private function product2array2($product, $parent = null){
-		$params = $this->product2array($product, $parent);
-		
-		//DO mapping
-		#$attributes = $this->_mapping->getProductAttributesDict();		
-    		$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
-		$attributes = $mapping->getProductAttributesDict();		
-		//$attributes = $product->getAttributes();
-		foreach ($attributes as $key => $value){
-			$d = $product->_getData($value);
-			if (preg_match("/s$/", $key)){
-				if (!is_array($d)){
-                                    $d = array((string)$d);
-                                }
-			}
-			if($mapping->isValidPair($key, $d) && $value != ""){
-			    $params[$key] = $d;
-			}
-		}
-		
-		$params['id'] = $product->getId();
-		$params['title'] = $product->getName();
-		return $params;	
-	}
 
     private function product2array($product, $parent = null) {
-        //Mage::log('product:' . $product->getId());
 	
-	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
+	    $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
         $params = array();
         if ($parent != null) {
-	    /*Mage::log("Config Parent " . (string)$parent->isConfigurable());
-	    Mage::log("Super Parent " . (string)$parent->isSuper());
-            Mage::log("Grouped Parent: " . $parent->isGrouped());
-	    Mage::log("Config Prod " . (string)$product->isConfigurable());
-	    Mage::log("Super Prod " . (string)$product->isSuper());
-            Mage::log("Grouped Prod: " . $product->isGrouped());
-	    Mage::log("Type product: " . $product->getTypeId());
-	    Mage::log("Type parent: " . $parent->getTypeId());
-	    Mage::log($product->getId()); */
-	    #$aProductIds = $product->getTypeInstance()->getChildrenIds($product->getId());
             $params['parent_id'] = "pid" . $parent->getId();
             $params['id'] = $product->getId();
             $params += $this->attributes2array($product, $mapping);
@@ -277,7 +222,6 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	    $parent_id = $this->_getParentId($product);
 	    if ($parent_id) {
 		$params['parent_id'] = "pid" . $parent_id;
-	        Mage::log("Parent Id: " . $parent_id . " Product id: " . $product->getId());
 	    } else {
 	    	$params['parent_id'] = "cid" . $product->getId();
 	    }
@@ -285,9 +229,9 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $params += $this->productImages2array($product);
         }
         
-	$params += $this->attributes2array($product, $mapping);
+	    $params += $this->attributes2array($product, $mapping);
         
-	$params += array(
+	    $params += array(
             'title' => $product->getName(),
             'description' => $product->getDescription(),
             'price' => $product->getFinalPrice(),
@@ -296,7 +240,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
         if ($product->isSuper()) {
             $aProductIds = $product->getTypeInstance()->getChildrenIds($product->getId());
-	    $prices = array();
+	        $prices = array();
             foreach ($aProductIds as $ids) {
                 foreach ($ids as $id) {
                     $aProduct = Mage::getModel('catalog/product')->load($id);
@@ -307,23 +251,18 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $minPrice = min($prices);
             $params['minimal_price'] = $minPrice;
             $params['price'] = $minPrice;
-            //Mage::log($product->getId() . '|' . $product->getFinalPrice() . '|' . $minPrice);
         }
 
 
         $ids = $product->getCategoryIds();
 
-        //Mage::log('$params: ' . print_r($params, true));
         foreach ($ids as $catid) {
             $catname = Mage::getModel('catalog/category')->load($catid)->getName();
-            //Mage::log('$catname: '.$catname);
             if (!isset($params['category'])) {
                 $params['category'] = array();
             }
             $params['category'][] = $catname;
         }
-
-        //Mage::log('  params: ' . print_r($params, true));
 
         return $params;
     }
@@ -344,26 +283,25 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     }
 
     private function attributes2array($product, $mapping) {
-	$attributeMap = $mapping->getProductAttributesDict();		
+	    $attributeMap = $mapping->getProductAttributesDict();		
         $attributes = $product->getAttributes();
         $params = array();
         foreach ($attributes as $attribute) {
 	    if (array_key_exists($attribute->getName(), $attributeMap)){
-		$key = $attribute->getName();
-		$value = $product->_getData($key);
-		if (preg_match("/s$/", $key)){
-			if (!is_array($value)){
-			    $value = array((string)$value);
-			}
-		}
-		if($mapping->isValidPair($key, $value) && $attributeMap[$key] != ""){
-		    $params[$key] = $value;
-		}
+            $key = $attribute->getName();
+            $value = $product->_getData($key);
+            if (preg_match("/s$/", $key)){
+                if (!is_array($value)){
+                    $value = array((string)$value);
+                }
+            }
+            if($mapping->isValidPair($key, $value) && $attributeMap[$key] != ""){
+                $params[$key] = $value;
+            }
 	    }
             else if ($attribute->getIsVisibleOnFront() && $product->getData($attribute->getAttributeCode())) {
                 $value = $attribute->getFrontend()->getValue($product);
                 $code = $attribute->getAttributeCode();
-                //Mage::log($product->getId() . '  att: ' . $code . '=' . $value);
                 switch ($code) {
                     case 'gender':
                         if (!in_array(strtolower($value), array('male', 'female', 'unisex'))) {
