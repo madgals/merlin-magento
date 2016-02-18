@@ -76,19 +76,10 @@
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <fields>
-                        <id>
-                            <label>id (required)</label>
-                            <sort_order>1</sort_order>
-                            <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
-                        </id>
                         <title>
                             <label>title (required)</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -96,7 +87,7 @@
                         </title>
                         <description>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <label>description</label>
                             <sort_order>3</sort_order>
                             <show_in_default>1</show_in_default>
@@ -106,7 +97,7 @@
                         <price>
                             <label>price</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -115,7 +106,7 @@
                         <user>
                             <label>url</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -124,7 +115,7 @@
                         <user>
                             <label>images</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -133,7 +124,7 @@
                         <thumbnails>
                             <label>thumbnails</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -142,7 +133,7 @@
                         <sizes>
                             <label>sizes</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>8</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -151,7 +142,7 @@
                         <colors>
                             <label>colors</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>9</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -160,7 +151,7 @@
                         <tags>
                             <label>tags</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -169,7 +160,7 @@
                         <timestamp>
                             <label>timestamp</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -178,7 +169,7 @@
                         <availability>
                             <label>availability</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>12</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -187,7 +178,7 @@
                         <offer>
                             <label>offer</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>13</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -196,7 +187,7 @@
                         <age>
                             <label>age</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>14</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -205,7 +196,7 @@
                         <brand>
                             <label>brand</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>15</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -214,7 +205,7 @@
                         <geo>
                             <label>geo</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>16</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -223,7 +214,7 @@
                         <gender>
                             <label>gender</label>
                             <frontend_type>select</frontend_type>
-			    <source_model>adminhtml/system_config_source_product_attributes</source_model>
+			                <source_model>adminhtml/system_config_source_product_attributes</source_model>
                             <sort_order>17</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
