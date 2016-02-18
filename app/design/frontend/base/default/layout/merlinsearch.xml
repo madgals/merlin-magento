@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <layout>
     <default>
-        <reference name="head">
+        <!--<reference name="head">
             <block type="core/text" name="typeaheadcss">
                 <action method="setText">
                     <text><![CDATA[<link href="https://s3.amazonaws.com/assets.blackbird.am/merlin-typeahead-2.0.0.min.css" rel="stylesheet" type="text/css">]]></text>
                 </action>
             </block>
         </reference>
+        -->
         <reference name="before_body_end">
             <block type="core/template" template="merlinsearch/typeahead.phtml"/>
         </reference>
