@@ -294,12 +294,12 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $key = $attribute->getName();
             $field = $attributeMap[$key];
             $value = $product->_getData($key);
-            if (preg_match("/s$/", $field)){
-                if (!is_array($value)){
+            if (preg_match("/s$/", $field) && $value){
+                if (!is_array($value) && $value){
                     $value = array((string)$value);
                 }
             }
-            if($mapping->isValidPair($field, $value) && $field){
+            if($mapping->isValidPair($field, $value) && $value){
                 $params[$field] = $value;
             }
 	    }
