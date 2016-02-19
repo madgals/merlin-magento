@@ -23,11 +23,13 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     protected $_orderDir;
 
     function __construct() {
-        $this->_facetableEnumAttributes = array("category");
+        $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
+
+        $this->_facetableEnumAttributes = $mapping->getEnumFacets();  //array("category");
         $this->_facetableHistAttributes = array("price" => [0, 500, 100]);
         $this->_attributeEnumFilters = array();
-	$this->_attributeFiltersMin = array();
-	$this->_attributeFiltersMax = array();
+	    $this->_attributeFiltersMin = array();
+	    $this->_attributeFiltersMax = array();
         $this->_enumFacets = array();
         $this->_histFacets = array();
         $this->_items = array();

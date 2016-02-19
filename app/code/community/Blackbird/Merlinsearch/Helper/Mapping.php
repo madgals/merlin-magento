@@ -5,7 +5,9 @@ class Blackbird_Merlinsearch_Helper_Mapping{
     protected $_reserved_fields = array("id", "title", "description", "price",
 			"images", "thumbnails", "sizes", "colors", 
 			"tags", "timestamp", "availability", "offer",
-			"age", "brand", "geo", "gender");
+            "age", "brand", "geo", "gender", "extra_field");
+
+    protected $_facet_fields = array("enum_facets");
     
     protected $_reserved_types = array("id"=>["string", "int"], 
                                     "title"=>["string"],
@@ -126,11 +128,30 @@ class Blackbird_Merlinsearch_Helper_Mapping{
         $attributes =  array();
         foreach ($this->_reserved_fields as $field){
             $value  = trim(Mage::getStoreConfig('merlinsearch/merlinindex/' . $field));
-            if ($value != "None"){
-            $attributes[$field] = $value;
+            if ($value){
+                if (is_array($value)){
+                    foreach ($value as $val)
+                        $attributes[$val] = $val;
+                } else {
+                    $attributes[$value] = $field;
+                }    
             }
         }
         return $attributes;
+    }
+
+    public function getEnumFacets(){
+        $facets = array();
+        foreach ($this->_facet_fields as $field){
+            $value = Mage::getStoreConfig('merlinsearch/merlinindex/' . $field);
+            if (is_array($value)){
+                foreach ($value as $val){
+                    $facets[] = $val;
+                }
+            } else if ($value) {
+                $facets[] = $value
+            } 
+        }
     }
 
     public function isValidPair($field, $value){

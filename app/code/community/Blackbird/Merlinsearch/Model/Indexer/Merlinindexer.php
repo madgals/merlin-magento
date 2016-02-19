@@ -216,20 +216,18 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $params['id'] = $product->getId();
             $params += $this->attributes2array($product, $mapping);
             $params += $this->productImages2array($product);
-
             $product = $parent;
         } else {
-	    $parent_id = $this->_getParentId($product);
-	    if ($parent_id) {
-		$params['parent_id'] = "pid" . $parent_id;
-	    } else {
-	    	$params['parent_id'] = "cid" . $product->getId();
-	    }
+	        $parent_id = $this->_getParentId($product);
+	        if ($parent_id) {
+		        $params['parent_id'] = "pid" . $parent_id;
+	        } else {
+	    	    $params['parent_id'] = "cid" . $product->getId();
+	        }
             $params['id'] = $product->getId();
+	        $params += $this->attributes2array($product, $mapping);
             $params += $this->productImages2array($product);
         }
-        
-	    $params += $this->attributes2array($product, $mapping);
         
 	    $params += array(
             'title' => $product->getName(),
@@ -237,6 +235,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             'price' => $product->getFinalPrice(),
             'url' => $product->getProductUrl()
         );
+
 
         if ($product->isSuper()) {
             $aProductIds = $product->getTypeInstance()->getChildrenIds($product->getId());
@@ -264,6 +263,9 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $params['category'][] = $catname;
         }
 
+        //ATTRIBUTE MAPPING TRUMPS ALL OTHER
+	    $params += $this->attributes2array($product, $mapping);
+        
         return $params;
     }
 
@@ -289,14 +291,15 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         foreach ($attributes as $attribute) {
 	    if (array_key_exists($attribute->getName(), $attributeMap)){
             $key = $attribute->getName();
+            $field = $attributeMap[$key];
             $value = $product->_getData($key);
-            if (preg_match("/s$/", $key)){
+            if (preg_match("/s$/", $field)){
                 if (!is_array($value)){
                     $value = array((string)$value);
                 }
             }
-            if($mapping->isValidPair($key, $value) && $attributeMap[$key] != ""){
-                $params[$key] = $value;
+            if($mapping->isValidPair($field, $value) && $field){
+                $params[$field] = $value;
             }
 	    }
             else if ($attribute->getIsVisibleOnFront() && $product->getData($attribute->getAttributeCode())) {
