@@ -149,7 +149,7 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                     $facets[] = $val;
                 }
             } else if ($value) {
-                $facets[] = $value
+                $facets[] = $value;
             } 
         }
     }
