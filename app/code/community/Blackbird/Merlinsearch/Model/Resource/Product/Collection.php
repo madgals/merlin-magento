@@ -26,7 +26,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
 
         $this->_facetableEnumAttributes = $mapping->getEnumFacets();  //array("category");
-        $this->_facetableHistAttributes = array("price" => [0, 500, 100]);
+        $this->_facetableHistAttributes = array("price" => array(0, 500, 100));
         $this->_attributeEnumFilters = array();
 	    $this->_attributeFiltersMin = array();
 	    $this->_attributeFiltersMax = array();

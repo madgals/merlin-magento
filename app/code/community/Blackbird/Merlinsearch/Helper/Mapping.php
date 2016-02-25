@@ -9,25 +9,25 @@ class Blackbird_Merlinsearch_Helper_Mapping{
 
     protected $_facet_fields = array("enum_facets");
     
-    protected $_reserved_types = array("id"=>["string", "int"], 
-                                    "title"=>["string"],
-                                    "description"=>["string"],
-                                    "price"=>["float"],
-                                    "url"=>["string"],
-                                    "images"=>["multi-string"],
-                                    "thumbnails"=>["multi-string"],
-                                    "sizes"=>["multi-string"],
-                                    "colors"=>["multi-string"],
-                                    "tags"=>["multi-string"],
-                                    "timestamp"=>["string"],
-                                    "availability"=>["string"],
-                                    "offer"=>["string"],
-                                    "gender"=>["string"],
-                                    "age"=>["string"],
-                                    "brand"=>["string"],
-                                    "geo"=>["string"]);
+    protected $_reserved_types = array("id"=> array("string", "int"), 
+                                    "title"=> "string",
+                                    "description"=>"string",
+                                    "price"=>"float",
+                                    "url"=>"string",
+                                    "images"=>"multi-string",
+                                    "thumbnails"=>"multi-string",
+                                    "sizes"=>"multi-string",
+                                    "colors"=>"multi-string",
+                                    "tags"=>"multi-string",
+                                    "timestamp"=>"string",
+                                    "availability"=>"string",
+                                    "offer"=>"string",
+                                    "gender"=>"string",
+                                    "age"=>"string",
+                                    "brand"=>"string",
+                                    "geo"=>"string");
     
-    protected $_reserved_enum = array("colors"=>["Black",
+    protected $_reserved_enum = array("colors"=>array("Black",
                                                 "Blue",
                                                 "Brown",
                                                 "Cream",
@@ -98,15 +98,15 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                                                 "Plum",
                                                 "Print",
                                                 "Stripe",
-                                                "Tan"],
-                                        "availability" => ["Discontinued",
+                                                "Tan"),
+                                        "availability" => array("Discontinued",
                                                             "InStock",
                                                             "InStoreOnly",
                                                             "LimitedAvailability",
                                                             "OnlineOnly",
                                                             "OutOfStock",
                                                             "PreOrder",
-                                                            "SoldOut"]);
+                                                            "SoldOut"));
 
                         
 
