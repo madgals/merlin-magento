@@ -8,7 +8,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * Data key for matching result to be saved in
      */
     const EVENT_MATCH_RESULT_KEY = 'merlinsearch_match_result';
-
+    const BATCH_SIZE = 500;
     
     
     /**
@@ -126,6 +126,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         //Mage::log('  crud: ' . print_r($r, true));
     }
 
+
     private function reindexMerlinData($id = null) {
         //Mage::log('Merlinsearch reindexAll');
         //Mage::log(Mage::getBaseDir('lib').DIRECTORY_SEPARATOR.'Merlin'.DIRECTORY_SEPARATOR.'Merlin.php');
@@ -153,12 +154,11 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         $pages = $products->getLastPageNumber();
         $currentPage = 1;
         $productsLoaded = 0;
-
+        $data = array();
         do {
             $products->setCurPage($currentPage);
             $products->load();
 
-            $data = array();
             foreach ($products as $prod) {
 
                 if ($prod->isConfigurable()) {
@@ -173,11 +173,14 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                     $productsLoaded++;
                 }
             }
-
-            $c = new \Merlin\Crud();
-            $c->addSubject(array('data' => $data));
-            $r = $merlin->upload($c);
-		    Mage::log($r);
+            if ($productsLoaded >= self::BATCH_SIZE || $currentPage >= $pages){
+                $c = new \Merlin\Crud();
+                $c->addSubject(array('data' => $data));
+                $r = $merlin->upload($c);
+                Mage::log($r);
+                $productsLoaded = 0;
+                $data = array();
+            }
 
             $currentPage++;
             //clear collection and free memory
