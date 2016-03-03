@@ -139,7 +139,8 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         //Mage::log(Mage::app()->getStore()->getId());
 		
     	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
-	    $attributes = $mapping->getProductAttributesList();
+        $attributes = $mapping->getProductAttributesList();
+        $attributes[] = "visibility";
         $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
         //$products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
         $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);

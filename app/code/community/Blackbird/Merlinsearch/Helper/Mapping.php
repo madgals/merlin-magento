@@ -14,8 +14,8 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                                     "description"=> array("string"),
                                     "price"=> array("float"),
                                     "url"=> array("string"),
-                                    "images"=> array("multi-string"),
-                                    "thumbnails"=> array("multi-string"),
+                                    "images"=> array("multi-string-url"),
+                                    "thumbnails"=> array("multi-string-url"),
                                     "sizes"=> array("multi-string"),
                                     "colors"=> array("multi-string"),
                                     "tags"=> array("multi-string"),
@@ -167,6 +167,9 @@ class Blackbird_Merlinsearch_Helper_Mapping{
             else if ($r_type == "multi-string"){
                 if ($this->isMultiString($value)){$valid = true;}
             }
+            else if ($r_type == "multi-string-url"){
+                if ($this->isMultiStringUrl($value)){$valid = true;}
+            }
             else if ($r_type == "int"){
                 if (is_int($value)){$valid = true;}
             }
@@ -183,6 +186,25 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                 foreach ($value as $val){
                     if (!is_string($val)){
                         $valid = false;
+                    }
+                }
+            }
+        }
+        return $valid;
+    }
+
+    private function isMultiStringUrl($value){
+        $valid = false;
+        $url_start = "http";
+        $url_len = strlen($url_start);
+        if (is_array($value)){
+            if (count($value) >= 1){
+                $valid = true;
+                foreach ($value as $val){
+                    if (!is_string($val)){
+                        if (!(substr($val, 0, $url_length) === $url_start)){
+                            $valid = false;
+                        }
                     }
                 }
             }
