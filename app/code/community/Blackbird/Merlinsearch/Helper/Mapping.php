@@ -201,10 +201,9 @@ class Blackbird_Merlinsearch_Helper_Mapping{
             if (count($value) >= 1){
                 $valid = true;
                 foreach ($value as $val){
-                    if (!is_string($val)){
-                        if (!(substr($val, 0, $url_length) === $url_start)){
+                    if (!is_string($val) || (!(substr($val, 0, $url_length) === $url_start))){
                             $valid = false;
-                        }
+                        
                     }
                 }
             }

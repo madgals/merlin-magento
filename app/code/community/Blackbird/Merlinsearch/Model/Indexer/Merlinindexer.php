@@ -166,11 +166,11 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                     $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
                     //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
                     foreach ($childProducts as $child) {
-                        $data[] = $this->product2array($child, $prod);
+                        $data[] = $this->product2array($child, $mapping, $prod);
                         $productsLoaded++;
                     }
                 } else{
-                    $data[] = $this->product2array($prod);
+                    $data[] = $this->product2array($prod, $mapping);
                     $productsLoaded++;
                 }
             }
@@ -212,15 +212,14 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     }
 
 
-    private function product2array($product, $parent = null) {
+    private function product2array($product, $mapping, $parent = null) {
 	
-	    $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
         $params = array();
         if ($parent != null) {
             $params['parent_id'] = "pid" . $parent->getId();
             $params['id'] = $product->getId();
             $params += $this->attributes2array($product, $mapping);
-            $params += $this->productImages2array($product);
+            $params += $this->productImages2array($product, $mapping);
             $product = $parent;
         } else {
 	        $parent_id = $this->_getParentId($product);
@@ -231,7 +230,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	        }
             $params['id'] = $product->getId();
 	        $params += $this->attributes2array($product, $mapping);
-            $params += $this->productImages2array($product);
+            $params += $this->productImages2array($product, $mapping);
         }
         
 	    $params += array(
@@ -274,14 +273,20 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         return $params;
     }
 
-    private function productImages2array($product) {
+    private function productImages2array($product, $mapping) {
         $params = array();
         $params['images'] = array();
         $params['thumbnails'] = array();
         try {
             if ($product->hasImage()) {
-                $params['images'][] = $product->getImageUrl();;
-                $params['thumbnails'][] = $product->getSmallImageUrl();
+                $images = array($product->getImageUrl());
+                $thumbnails = array($product->getSmallImageUrl());
+                if ($mapping->isValidPair("images", $images)){
+                    $params['images'] = $images;
+                }
+                if ($mapping->isValidPair("thumbnails", $thumbnails)){
+                    params['thumbnails'] = $product->getSmallImageUrl();
+                }
             }
         } catch (Exception $e) {
             Mage::log('  cant find image for product:' . $product->getId());
