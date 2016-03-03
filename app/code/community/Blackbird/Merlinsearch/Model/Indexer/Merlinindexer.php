@@ -142,7 +142,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	    $attributes = $mapping->getProductAttributesList();
         $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
         //$products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
-        //$products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+        $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
         $products->setStore(Mage::app()->getStore()->getId());
         $products->addStoreFilter(Mage::app()->getStore()->getId());
         $products->addUrlRewrite();
@@ -161,14 +161,14 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
             foreach ($products as $prod) {
 
-                if ($prod->isConfigurable() && $prod->isSalable()) {
+                if ($prod->isConfigurable()) {
                     $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
                     //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
                     foreach ($childProducts as $child) {
                         $data[] = $this->product2array($child, $prod);
                         $productsLoaded++;
                     }
-                } else if($prod->isSalable()){
+                } else{
                     $data[] = $this->product2array($prod);
                     $productsLoaded++;
                 }
