@@ -285,7 +285,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                     $params['images'] = $images;
                 }
                 if ($mapping->isValidPair("thumbnails", $thumbnails)){
-                    params['thumbnails'] = $product->getSmallImageUrl();
+                    $params['thumbnails'] = $thumbnails;
                 }
             }
         } catch (Exception $e) {
