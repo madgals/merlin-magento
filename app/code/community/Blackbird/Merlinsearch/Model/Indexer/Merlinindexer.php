@@ -153,7 +153,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         }
 
         $pages = $products->getLastPageNumber();
-        $currentPage = 1;
+        $currentPage = 0;
         $productsLoaded = 0;
         $data = array();
         do {
@@ -275,17 +275,16 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
     private function productImages2array($product, $mapping) {
         $params = array();
-        $params['images'] = array();
-        $params['thumbnails'] = array();
         try {
             if ($product->hasImage()) {
                 $images = array($product->getImageUrl());
-                $thumbnails = array($product->getSmallImageUrl());
                 if ($mapping->isValidPair("images", $images)){
-                    $params['images'] = $images;
+                    $params['images'] = array_values($images);
                 }
+                
+                $thumbnails = array($product->getSmallImageUrl());
                 if ($mapping->isValidPair("thumbnails", $thumbnails)){
-                    $params['thumbnails'] = $thumbnails;
+                    $params['thumbnails'] = array_values($thumbnails);
                 }
             }
         } catch (Exception $e) {
@@ -299,17 +298,22 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         $attributes = $product->getAttributes();
         $params = array();
         foreach ($attributes as $attribute) {
-	    if (array_key_exists($attribute->getName(), $attributeMap)){
+        if (array_key_exists($attribute->getName(), $attributeMap)){
             $key = $attribute->getName();
             $field = $attributeMap[$key];
             $value = $product->_getData($key);
-            if (preg_match("/s$/", $field) && $value){
+            if (preg_match("/s$/", $field) && isset($value)){
                 if (!is_array($value) && $value){
                     $value = array((string)$value);
                 }
             }
-            if($mapping->isValidPair($field, $value) && $value){
+            if($mapping->isValidPair($field, $value) && isset($value)){
                 $params[$field] = $value;
+            } else if ($field == "images" || $field == "thumbnails"){
+                $new_val = $product->_getData($key);
+                if (isset($new_val)){
+                    $params[$field] = array(Mage::getModel('catalog/product_media_config')->getMediaUrl($product->_getData($key)));
+                }
             }
 	    }
             else if ($attribute->getIsVisibleOnFront() && $product->getData($attribute->getAttributeCode())) {

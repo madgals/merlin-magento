@@ -203,7 +203,6 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                 foreach ($value as $val){
                     if (!is_string($val) || (!(substr($val, 0, $url_len) === $url_start))){
                             $valid = false;
-                        
                     }
                 }
             }
