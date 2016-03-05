@@ -200,7 +200,12 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     }
 
     public function getSetIds() {
-        return null;
+        $this->load();
+        $select = $this->getSelect();
+        $select->reset(Zend_Db_Select::COLUMNS);
+        $select->distinct(true);
+        $select->columns('attribute_set_id');
+        return $this->getConnection()->fetchCol($select);
     }
 
     protected function _buildClearSelect($select = null) {
