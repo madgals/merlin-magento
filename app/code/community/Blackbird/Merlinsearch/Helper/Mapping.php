@@ -22,7 +22,7 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                                     "timestamp"=> array("string"),
                                     "availability"=> array("string"),
                                     "offer"=> array("string"),
-                                    "gender"=> array("string"),
+                                    "gender"=> array("string-gender"),
                                     "age"=> array("string"),
                                     "brand"=> array("string"),
                                     "geo"=> array("string"));
@@ -110,9 +110,11 @@ class Blackbird_Merlinsearch_Helper_Mapping{
 
                         
 
+    public function getReservedFields(){
+        return $this->_reserved_fields;
+    }
                     
-                            	
-	
+
     public function getProductAttributesList(){
         $attributes =  array();
         foreach ($this->_reserved_fields as $field){
@@ -170,12 +172,20 @@ class Blackbird_Merlinsearch_Helper_Mapping{
             else if ($r_type == "multi-string-url"){
                 if ($this->isMultiStringUrl($value)){$valid = true;}
             }
+            else if ($r_type == "string-gender"){
+                if ($this->isGenderString($value)){$valid = true;}
+            }
             else if ($r_type == "int"){
                 if (is_int($value)){$valid = true;}
             }
         }
         return $valid; 
  
+    }
+
+
+    private function isGenderString($value){
+        return in_array(strtolower($value), array('male', 'female', 'unisex'));
     }
 
     private function isMultiString($value){

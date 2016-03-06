@@ -141,8 +141,10 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
         $attributes = $mapping->getProductAttributesList();
         $attributes[] = "visibility";
-        $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
-        //$products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
+        $temp_attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection(); 
+        
+        // $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
+        $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
         $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
         $products->setStore(Mage::app()->getStore()->getId());
         $products->addStoreFilter(Mage::app()->getStore()->getId());
@@ -295,37 +297,35 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
     private function attributes2array($product, $mapping) {
 	    $attributeMap = $mapping->getProductAttributesDict();		
-        $attributes = $product->getAttributes();
+        //$attributes = $product->getAttributes();
+        $attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
         $params = array();
         foreach ($attributes as $attribute) {
-        if (array_key_exists($attribute->getName(), $attributeMap)){
-            $key = $attribute->getName();
-            $field = $attributeMap[$key];
-            $value = $product->_getData($key);
-            if (preg_match("/s$/", $field) && isset($value)){
-                if (!is_array($value) && $value){
-                    $value = array((string)$value);
+            $key = $attribute->getAttributeCode();
+            $value = $product->getResource()->getAttribute($key)->getFrontend()->getValue($product);
+            if (array_key_exists($attribute->getName(), $attributeMap)){
+                $field = $attributeMap[$key];
+                if (preg_match("/s$/", $field) && isset($value)){
+                    if (!is_array($value) && $value){
+                        $value = array((string)$value);
+                    }
+                }
+                if($mapping->isValidPair($field, $value) && isset($value)){
+                    $params[$field] = $value;
+                } else if ($field == "images" || $field == "thumbnails"){
+                    $new_val = $product->_getData($key);
+                    if (isset($new_val)){
+                        $params[$field] = array(Mage::getModel('catalog/product_media_config')->getMediaUrl($product->_getData($key)));
+                    }
                 }
             }
-            if($mapping->isValidPair($field, $value) && isset($value)){
-                $params[$field] = $value;
-            } else if ($field == "images" || $field == "thumbnails"){
-                $new_val = $product->_getData($key);
-                if (isset($new_val)){
-                    $params[$field] = array(Mage::getModel('catalog/product_media_config')->getMediaUrl($product->_getData($key)));
-                }
-            }
-	    }
-            else if ($attribute->getIsVisibleOnFront() && $product->getData($attribute->getAttributeCode())) {
-                $value = $attribute->getFrontend()->getValue($product);
-                $code = $attribute->getAttributeCode();
-                switch ($code) {
-                    case 'gender':
-                        if (!in_array(strtolower($value), array('male', 'female', 'unisex'))) {
-                            break;
-                        }
-                    default:
-                        $params[$code] = $value;
+            else {// if ($attribute->getIsVisibleOnFront() && $product->getData($attribute->getAttributeCode())) {
+                if (in_array($key, $mapping->getReservedFields())){
+                    if ($mapping->isValidPair($key, $value)){
+                        $params[$key] = $value;
+                    }
+                } else {
+                    $params[$key] = $value;
                 }
             }
         }
