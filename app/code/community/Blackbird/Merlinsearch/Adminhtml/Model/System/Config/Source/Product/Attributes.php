@@ -9,8 +9,9 @@ class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attrib
 	public function toOptionArray(){
 	$options = array();
 	$entityTypeId = Mage::getModel('eav/entity_type')->loadByCode('catalog_product')->getEntityTypeId();
-	//$attributes = Mage::getModel('eav/entity_attribute')->getCollection()->addFilter('entity_type_id', $entityTypeId)->setOrder('attribute_code', 'ASC');
-	$attributes = Mage::getModel('eav/entity_attribute')->getCollection()->addFilter('entity_type_id', $entityTypeId);
+    $attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
+    //$attributes = Mage::getModel('eav/entity_attribute')->getCollection()->addFilter('entity_type_id', $entityTypeId)->setOrder('attribute_code', 'ASC');
+	//$attributes = Mage::getModel('eav/entity_attribute')->getCollection()->addFilter('entity_type_id', $entityTypeId);
 	foreach ($attributes as $attribute){
 		$item = array();
 		$item['value'] = $attribute->getAttributeCode();

@@ -168,11 +168,11 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                     $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
                     //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
                     foreach ($childProducts as $child) {
-                        $data[] = $this->product2array($child, $mapping, $prod);
+                        $data[] = $this->product2array($child, $mapping, $temp_attributes, $prod);
                         $productsLoaded++;
                     }
                 } else{
-                    $data[] = $this->product2array($prod, $mapping);
+                    $data[] = $this->product2array($prod, $mapping, $temp_attributes);
                     $productsLoaded++;
                 }
             }
@@ -214,13 +214,13 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     }
 
 
-    private function product2array($product, $mapping, $parent = null) {
+    private function product2array($product, $mapping, $attributes, $parent = null) {
 	
         $params = array();
         if ($parent != null) {
             $params['parent_id'] = "pid" . $parent->getId();
             $params['id'] = $product->getId();
-            $params += $this->attributes2array($product, $mapping);
+            $params += $this->attributes2array($product, $mapping, $attributes);
             $params += $this->productImages2array($product, $mapping);
             $product = $parent;
         } else {
@@ -231,7 +231,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	    	    $params['parent_id'] = "cid" . $product->getId();
 	        }
             $params['id'] = $product->getId();
-	        $params += $this->attributes2array($product, $mapping);
+	        $params += $this->attributes2array($product, $mapping, $attributes);
             $params += $this->productImages2array($product, $mapping);
         }
         
@@ -270,7 +270,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         }
 
         //ATTRIBUTE MAPPING TRUMPS ALL OTHER
-	    $params += $this->attributes2array($product, $mapping);
+	    $params += $this->attributes2array($product, $mapping, $attributes);
         
         return $params;
     }
@@ -295,10 +295,10 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         return $params;
     }
 
-    private function attributes2array($product, $mapping) {
+    private function attributes2array($product, $mapping, $attributes) {
 	    $attributeMap = $mapping->getProductAttributesDict();		
         //$attributes = $product->getAttributes();
-        $attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
+        //$attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
         $params = array();
         foreach ($attributes as $attribute) {
             $key = $attribute->getAttributeCode();
