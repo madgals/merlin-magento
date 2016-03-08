@@ -22,7 +22,8 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     protected $_orderBy;
     protected $_orderDir;
 
-    function __construct() {
+    function __construct($resource=null) {
+        parent::__construct($resource);
         $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
 
         $this->_facetableEnumAttributes = $mapping->getEnumFacets();  //array("category");
@@ -101,7 +102,17 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
             }
         }
     }
-    
+   
+    //Based on three character php header append
+    private function getMagentoParentId($prod){
+        $parent_id = $prod->parent_id;
+        if (substr($parent_id,0, 3) === "pid"){
+            $id = substr($parent_id, 3);
+            return $id;
+        }
+        return $prod->id;
+    }
+ 
     public function loadFromQuery() {
         
         $engine = $this->getMerlinEngine();
@@ -156,9 +167,9 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
 
         
 	$this->_totalCount = $r->results->numfound;
-        foreach ($r->results->hits as $prod) {
-	    $bprod = Mage::getModel('catalog/product')->load($prod->id);
-            $this->_items[$bprod->getEntityId()] = $bprod;
+    foreach ($r->results->hits as $prod) {
+	    $bprod = Mage::getModel('catalog/product')->load($this->getMagentoParentId($prod));
+        $this->_items[$bprod->getEntityId()] = $bprod;
         }
 	
     }
@@ -199,13 +210,26 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         return $this->_totalCount;
     }
 
-    public function getSetIds() {
-        return null;
-    }
+    /*public function getSetIds() {
+        $this->load();
+        $select = $this->getSelect();
+        $select->reset(Zend_Db_Select::COLUMNS);
+        $select->distinct(true);
+        $select->columns('attribute_set_id');
+        return $this->getConnection()->fetchCol($select);
+    }*/
 
-    protected function _buildClearSelect($select = null) {
-        return null;
-    }
+    /*protected function _buildClearSelect($select = null) {
+        if (is_null($select)) {
+            $select = clone $this->getSelect();
+        }
+        $select->reset(Zend_Db_Select::ORDER);
+        $select->reset(Zend_Db_Select::LIMIT_COUNT);
+        $select->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $select->reset(Zend_Db_Select::COLUMNS);
+
+        return $select;
+    }*/
 
     public function addCountToCategories($categoryCollection) {
         return $categoryCollection;

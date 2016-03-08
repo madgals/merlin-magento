@@ -14,7 +14,8 @@
         </reference>
     </default>
     
-    <catalog_product_view>
+    <!-- 
+         <catalog_product_view>
         <reference name="content">
             <block type="core/text" name="vrec_heading">
                 <action method="setText">
@@ -26,4 +27,5 @@
             </block>
         </reference>
     </catalog_product_view>
+    -->
 </layout>

@@ -10,22 +10,22 @@ class Blackbird_Merlinsearch_Helper_Mapping{
     protected $_facet_fields = array("enum_facets");
     
     protected $_reserved_types = array("id"=> array("string", "int"), 
-                                    "title"=> "string",
-                                    "description"=>"string",
-                                    "price"=>"float",
-                                    "url"=>"string",
-                                    "images"=>"multi-string",
-                                    "thumbnails"=>"multi-string",
-                                    "sizes"=>"multi-string",
-                                    "colors"=>"multi-string",
-                                    "tags"=>"multi-string",
-                                    "timestamp"=>"string",
-                                    "availability"=>"string",
-                                    "offer"=>"string",
-                                    "gender"=>"string",
-                                    "age"=>"string",
-                                    "brand"=>"string",
-                                    "geo"=>"string");
+                                    "title"=> array("string"),
+                                    "description"=> array("string"),
+                                    "price"=> array("float"),
+                                    "url"=> array("string"),
+                                    "images"=> array("multi-string-url"),
+                                    "thumbnails"=> array("multi-string-url"),
+                                    "sizes"=> array("multi-string"),
+                                    "colors"=> array("multi-string"),
+                                    "tags"=> array("multi-string"),
+                                    "timestamp"=> array("string"),
+                                    "availability"=> array("string"),
+                                    "offer"=> array("string"),
+                                    "gender"=> array("string-gender"),
+                                    "age"=> array("string"),
+                                    "brand"=> array("string"),
+                                    "geo"=> array("string"));
     
     protected $_reserved_enum = array("colors"=>array("Black",
                                                 "Blue",
@@ -110,9 +110,11 @@ class Blackbird_Merlinsearch_Helper_Mapping{
 
                         
 
+    public function getReservedFields(){
+        return $this->_reserved_fields;
+    }
                     
-                            	
-	
+
     public function getProductAttributesList(){
         $attributes =  array();
         foreach ($this->_reserved_fields as $field){
@@ -167,12 +169,23 @@ class Blackbird_Merlinsearch_Helper_Mapping{
             else if ($r_type == "multi-string"){
                 if ($this->isMultiString($value)){$valid = true;}
             }
+            else if ($r_type == "multi-string-url"){
+                if ($this->isMultiStringUrl($value)){$valid = true;}
+            }
+            else if ($r_type == "string-gender"){
+                if ($this->isGenderString($value)){$valid = true;}
+            }
             else if ($r_type == "int"){
                 if (is_int($value)){$valid = true;}
             }
         }
         return $valid; 
  
+    }
+
+
+    private function isGenderString($value){
+        return in_array(strtolower($value), array('male', 'female', 'unisex'));
     }
 
     private function isMultiString($value){
@@ -183,6 +196,23 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                 foreach ($value as $val){
                     if (!is_string($val)){
                         $valid = false;
+                    }
+                }
+            }
+        }
+        return $valid;
+    }
+
+    private function isMultiStringUrl($value){
+        $valid = false;
+        $url_start = "http";
+        $url_len = strlen($url_start);
+        if (is_array($value)){
+            if (count($value) >= 1){
+                $valid = true;
+                foreach ($value as $val){
+                    if (!is_string($val) || (!(substr($val, 0, $url_len) === $url_start))){
+                            $valid = false;
                     }
                 }
             }
