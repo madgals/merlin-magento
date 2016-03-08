@@ -1,0 +1,5 @@
+app/code/community/Blackbird/Merlinsearch/ app/code/community/Blackbird/Merlinsearch/
+app/etc/modules/Blackbird_Merlinsearch.xml app/etc/modules/Blackbird_Merlinsearch.xml
+app/design/frontend/base/default/layout/merlinsearch.xml app/design/frontend/base/default/layout/merlinsearch.xml
+app/design/frontend/base/default/template/merlinsearch/ app/design/frontend/base/default/template/merlinsearch/
+lib/Merlin/ lib/Merlin/
