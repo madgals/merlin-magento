@@ -1,6 +1,22 @@
 # merlin-magento
-1. bash merlin-installer . [magento_install_directory]
+
  
+Install via Shell script
+----------------
+You can use the built in installer from the package, unzip and run the following command.
+```bash
+$ bash merlin-installer [magento_install_path]
+```
+
+
+Install via Composer
+----------------
+
+You can install this module using composer if you have the Magento Composer Installer configured (https://github.com/Cotya/magento-composer-installer) 
+
+```bash
+$ composer require blackbirdtech/merlin-magento
+```
 
 Install via Modman
 ----------------
