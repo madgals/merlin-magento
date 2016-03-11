@@ -1,5 +1,9 @@
 # merlin-magento
+Magento extension that employs the Blackbird API to utilize the Merlin search engine.
 
+This extension implements the merlin.js library, more information about it can be found at: http://www.blackbird.am/docs/
+
+More information and signup for the Blackbird services can be found at: http://www.blackbird.am/
  
 Install via Shell script
 ----------------
