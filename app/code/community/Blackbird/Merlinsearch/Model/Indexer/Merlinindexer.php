@@ -128,7 +128,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
 
     private function reindexMerlinData($id = null) {
-        //Mage::log('Merlinsearch reindexAll');
+        Mage::log('Merlinsearch reindexAll');
         //Mage::log(Mage::getBaseDir('lib').DIRECTORY_SEPARATOR.'Merlin'.DIRECTORY_SEPARATOR.'Merlin.php');
         //Mage::log(print_r($products, true));
 
@@ -149,47 +149,55 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         $products->setStore(Mage::app()->getStore()->getId());
         $products->addStoreFilter(Mage::app()->getStore()->getId());
         $products->addUrlRewrite();
-        $products->setPageSize(10);
+        $products->setPageSize(20);
         if ($id != null) {
             $products->addAttributeToFilter('entity_id', array('in' => array($id))); //REMOVE AS WELL
         }
 
         $pages = $products->getLastPageNumber();
-        $currentPage = 0;
+        $currentPage = 1;
         $productsLoaded = 0;
+        $batchLoaded = 0;
         $data = array();
         do {
             $products->setCurPage($currentPage);
             $products->load();
 
             foreach ($products as $prod) {
-
-                if ($prod->isConfigurable()) {
-                    $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
-                    //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
-                    foreach ($childProducts as $child) {
-                        $data[] = $this->product2array($child, $mapping, $temp_attributes, $prod);
+                if ($prod->isSalable(){  
+                    if ($prod->isConfigurable()) {
+                        $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
+                        //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
+                        foreach ($childProducts as $child) {
+                            $data[] = $this->product2array($child, $mapping, $temp_attributes, $prod);
+                            $productsLoaded++;
+                            $batchLoaded++;
+                        }
+                    } else{
+                        $data[] = $this->product2array($prod, $mapping, $temp_attributes);
                         $productsLoaded++;
+                        $batchLoaded++;
                     }
-                } else{
-                    $data[] = $this->product2array($prod, $mapping, $temp_attributes);
-                    $productsLoaded++;
                 }
             }
-            if ($productsLoaded >= self::BATCH_SIZE || $currentPage >= $pages){
+
+            if ($batchLoaded >= self::BATCH_SIZE || $currentPage >= $pages){
                 $c = new \Merlin\Crud();
                 $c->addSubject(array('data' => $data));
                 $r = $merlin->upload($c);
-                Mage::log($r);
-                $productsLoaded = 0;
+                $batchLoaded = 0;
                 $data = array();
+                Mage::log($r);
             }
-
+            Mage::log("Current Page: " . $currentPage . " Last Page: " . $pages);
+            set_time_limit(300);
             $currentPage++;
             //clear collection and free memory
             $products->clear();
         } while ($currentPage <= $pages);
-        
+
+        Mage::log("Reindex Finished!!");
+
         if ($id != null && $productsLoaded == 0) {
             $this->deleteMerlinProduct($id, $merlin);
         }
