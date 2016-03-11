@@ -164,7 +164,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $products->load();
 
             foreach ($products as $prod) {
-                if ($prod->isSalable(){  
+                if ($prod->isSalable()){  
                     if ($prod->isConfigurable()) {
                         $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
                         //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
