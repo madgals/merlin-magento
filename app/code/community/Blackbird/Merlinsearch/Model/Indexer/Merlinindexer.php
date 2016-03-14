@@ -2,6 +2,15 @@
 
 require_once(Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Merlin' . DIRECTORY_SEPARATOR . 'Merlin.php');
 
+/**
+ * MerlinIndexer: handles syncing data with Blackbird Merlin search engine
+ * Uses Merlin PHP Library to handle updates, deletes, and add
+ *
+ * Mapping class is used to determine which attributes to upload and which get mapped to reserved fields
+ * 
+ */
+
+
 class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Model_Indexer_Abstract {
 
     /**

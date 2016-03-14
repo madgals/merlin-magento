@@ -2,6 +2,14 @@
 
 require_once(Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Merlin' . DIRECTORY_SEPARATOR . 'Merlin.php');
 
+/*
+ *  Collection: Processes queries and loads product collections
+ *
+ *  Uses loadQuery Function to retrieve results from Merlin Search Engine
+ *
+ */
+
+
 class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Catalog_Model_Resource_Product_Collection {
 	
     protected $_query;
