@@ -263,7 +263,9 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     }
 
     function addFacetableAttribute($_facetableAttribute) {
-        $this->_facetableEnumAttributes[] = $_facetableAttribute;
+        if ( !in_array($_facetableAttribute, $this->_facetableEnumAttributes)){
+            $this->_facetableEnumAttributes[] = $_facetableAttribute;
+        } 
     }
     
     public function addAttributeFilter($name, $value){
