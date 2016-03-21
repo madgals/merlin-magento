@@ -1,17 +1,19 @@
 <?php
 
-class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Model_Layer_Filter_Category {
-
+class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Model_Layer_Filter_Category
+{
     const RESET_VALUE = '-';
 
     protected $_appliedCategory = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->_requestVar = 'cat';
     }
 
-    public function getResetValue() {
+    public function getResetValue()
+    {
         return self::RESET_VALUE;
     }
 
@@ -22,7 +24,8 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Mo
      * @param   Mage_Core_Block_Abstract $filterBlock
      * @return  Mage_Catalog_Model_Layer_Filter_Category
      */
-    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock) {
+    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock)
+    {
         //Mage::log('Blackbird_Merlinsearch_Model_Layer_Filter_Category apply');
 
         $filter = $request->getParam($this->getRequestVar());
@@ -55,7 +58,8 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Mo
      * @param   Mage_Catalog_Model_Category $category
      * @return unknown
      */
-    protected function _isValidCategory($category) {
+    protected function _isValidCategory($category)
+    {
         return $category->getId();
     }
 
@@ -64,7 +68,8 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Mo
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return Mage::helper('catalog')->__('Category');
     }
 
@@ -73,10 +78,10 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Mo
      *
      * @return Mage_Catalog_Model_Category
      */
-    public function getCategory() {
+    public function getCategory()
+    {
         if (!is_null($this->_categoryId)) {
-            $category = Mage::getModel('catalog/category')
-                    ->load($this->_categoryId);
+            $category = Mage::getModel('catalog/category')->load($this->_categoryId);
             if ($category->getId()) {
                 return $category;
             }
@@ -89,9 +94,11 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Category extends Mage_Catalog_Mo
      *
      * @return array
      */
-    protected function _getItemsData() {
-        if($this->_appliedCategory != null) return array();
+    protected function _getItemsData()
+    {
+        if ($this->_appliedCategory != null) {
+            return array();
+        }
         return $this->getLayer()->getProductCollection()->getCategories();
     }
-
 }

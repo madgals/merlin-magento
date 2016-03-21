@@ -1,7 +1,7 @@
 <?php
 
-class Blackbird_Merlinsearch_Helper_Mapping{
-
+class Blackbird_Merlinsearch_Helper_Mapping
+{
     protected $_reserved_fields = array(
         "id",
         "title",
@@ -171,9 +171,9 @@ class Blackbird_Merlinsearch_Helper_Mapping{
     public function getEnumFacets()
     {
         $facets = array();
-        foreach ($this->_facet_fields as $field){
+        foreach ($this->_facet_fields as $field) {
             $value = Mage::getStoreConfig('merlinsearch/merlinindex/' . $field);
-            if (is_array($value)){
+            if (is_array($value)) {
                 foreach ($value as $val) {
                     $facets[] = $val;
                 }
@@ -193,11 +193,11 @@ class Blackbird_Merlinsearch_Helper_Mapping{
                     $valid = true;
                 }
             } else if ($r_type == "float") {
-                if (is_double($value)){
+                if (is_double($value)) {
                     $valid = true;
                 }
             } else if ($r_type == "multi-string") {
-                if ($this->isMultiString($value)){
+                if ($this->isMultiString($value)) {
                     $valid = true;
                 }
             } else if ($r_type == "multi-string-url") {
@@ -240,7 +240,8 @@ class Blackbird_Merlinsearch_Helper_Mapping{
         return $valid;
     }
 
-    private function isMultiStringUrl($value) {
+    private function isMultiStringUrl($value) 
+    {
         $valid = false;
         $url_start = "http";
         $url_len = strlen($url_start);

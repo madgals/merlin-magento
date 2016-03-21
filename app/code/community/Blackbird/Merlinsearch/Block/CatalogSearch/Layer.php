@@ -2,7 +2,6 @@
 
 class Blackbird_Merlinsearch_Block_CatalogSearch_Layer extends Mage_CatalogSearch_Block_Layer
 {
-
     /**
      * Get attribute filter block name
      *
@@ -18,11 +17,11 @@ class Blackbird_Merlinsearch_Block_CatalogSearch_Layer extends Mage_CatalogSearc
     protected function _initBlocks()
     {
         parent::_initBlocks();
-        $this->_categoryBlockName        = 'merlinsearch/layer_filter_category';
-        $this->_priceFilterBlockName     = 'merlinsearch/layer_filter_price';
+        $this->_categoryBlockName = 'merlinsearch/layer_filter_category';
+        $this->_priceFilterBlockName = 'merlinsearch/layer_filter_price';
         $this->_attributeFilterBlockName = 'merlinsearch/layer_filter_attribute';
-//        $color = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', 'color');
-//        $this->setData('_filterable_attributes', array($color));
+        // $color = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', 'color');
+        // $this->setData('_filterable_attributes', array($color));
     }
 
     public function canShowBlock()

@@ -1,17 +1,19 @@
 <?php
 
-class Blackbird_Merlinsearch_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Filter_Category {
-
+class Blackbird_Merlinsearch_Model_Layer_Filter_Price extends Mage_Catalog_Model_Layer_Filter_Category
+{
     const RESET_VALUE = '-';
 
     protected $_appliedFilter = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->_requestVar = 'price';
     }
 
-    public function getResetValue() {
+    public function getResetValue()
+    {
         return self::RESET_VALUE;
     }
 
@@ -22,7 +24,8 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Price extends Mage_Catalog_Model
      * @param   Mage_Core_Block_Abstract $filterBlock
      * @return  Mage_Catalog_Model_Layer_Filter_Category
      */
-    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock) {
+    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock)
+    {
         //Mage::log('Blackbird_Merlinsearch_Model_Layer_Filter_Category apply');
 
         $filter = $request->getParam($this->getRequestVar());
@@ -55,18 +58,19 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Price extends Mage_Catalog_Model
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return Mage::helper('catalog')->__('Price');
     }
 
-    protected function _getItemsData() {
+    protected function _getItemsData()
+    {
         if($this->_appliedFilter != null) return array();
         $ranges = $this->getLayer()->getProductCollection()->getPriceHist();
-        $store      = Mage::app()->getStore();
-        foreach($ranges as $key=>$val){
+        $store = Mage::app()->getStore();
+        foreach($ranges as $key=>$val) {
             $ranges[$key]['label'] = $store->formatPrice($val['from']) . ' - ' . $store->formatPrice($val['to']);
         }
         return $ranges;
     }
-
 }

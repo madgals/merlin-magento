@@ -78,8 +78,9 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_M
      *
      * @return array
      */
-    protected function _getItemsData() {
-        if ($this->_appliedFilter != null){
+    protected function _getItemsData() 
+    {
+        if ($this->_appliedFilter != null) {
             return array();
         }
         return $this->getLayer()->getProductCollection()->getAttributeFacet($this->getAttributeModel()->getAttributeCode());
