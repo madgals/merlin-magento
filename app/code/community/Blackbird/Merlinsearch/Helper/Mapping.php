@@ -240,7 +240,7 @@ class Blackbird_Merlinsearch_Helper_Mapping
         return $valid;
     }
 
-    private function isMultiStringUrl($value) 
+    private function isMultiStringUrl($value)
     {
         $valid = false;
         $url_start = "http";

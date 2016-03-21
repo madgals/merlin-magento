@@ -1,6 +1,6 @@
 <?php
 
-class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearch_Model_Layer 
+class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearch_Model_Layer
 {
 
     const XML_PATH_DISPLAY_LAYER_COUNT = 'catalog/search/use_layered_navigation_count';

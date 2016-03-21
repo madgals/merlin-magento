@@ -1,11 +1,11 @@
 <?php
 
-function compare_label($a, $b) 
+function compare_label($a, $b)
 {
     return strnatcmp($a["label"], $b['label']);
 }
 
-class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attributes 
+class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attributes
 {
     public function toOptionArray()
     {

@@ -38,7 +38,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * Retrieve Indexer name
      * @return string
      */
-    public function getName() 
+    public function getName()
     {
         return 'Merlin indexer';
     }
@@ -47,7 +47,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * Retrieve Indexer description
      * @return string
      */
-    public function getDescription() 
+    public function getDescription()
     {
         return 'Syncs the local DB with Blackbirds DB';
     }
@@ -56,7 +56,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * Register data required by process in event object
      * @param Mage_Index_Model_Event $event
      */
-    protected function _registerEvent(Mage_Index_Model_Event $event) 
+    protected function _registerEvent(Mage_Index_Model_Event $event)
     {
         $dataObj = $event->getDataObject();
         if ($event->getType() == Mage_Index_Model_Event::TYPE_SAVE) {
@@ -72,7 +72,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * Process event
      * @param Mage_Index_Model_Event $event
      */
-    protected function _processEvent(Mage_Index_Model_Event $event) 
+    protected function _processEvent(Mage_Index_Model_Event $event)
     {
         $data = $event->getNewData();
         if (!empty($data['merlinsearch_update_product_id'])) {
@@ -108,7 +108,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      * @param Mage_Index_Model_Event $event
      * @return bool
      */
-    public function matchEvent(Mage_Index_Model_Event $event) 
+    public function matchEvent(Mage_Index_Model_Event $event)
     {
         $data = $event->getNewData();
         if (isset($data[self::EVENT_MATCH_RESULT_KEY])) {
@@ -217,7 +217,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         $merlin->close();
     }
 
-    private function getMerlinEngine() 
+    private function getMerlinEngine()
     {
         return new \Merlin\MerlinCrud(
             trim(Mage::getStoreConfig('merlinsearch/merlinconfig/company')),
@@ -242,7 +242,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         return null;
     }
 
-    private function product2array($product, $mapping, $attributes, $parent = null) 
+    private function product2array($product, $mapping, $attributes, $parent = null)
     {
         $params = array();
         if ($parent != null) {
@@ -302,7 +302,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         return $params;
     }
 
-    private function productImages2array($product, $mapping) 
+    private function productImages2array($product, $mapping)
     {
         $params = array();
         try {
@@ -323,7 +323,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         return $params;
     }
 
-    private function attributes2array($product, $mapping, $attributes) 
+    private function attributes2array($product, $mapping, $attributes)
     {
 	    $attributeMap = $mapping->getProductAttributesDict();
         //$attributes = $product->getAttributes();

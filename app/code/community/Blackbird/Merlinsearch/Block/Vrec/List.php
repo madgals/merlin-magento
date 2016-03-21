@@ -4,7 +4,7 @@ class Blackbird_Merlinsearch_Block_Vrec_List extends Mage_Catalog_Block_Product_
 {
     protected $_merlinProducts;
 
-    public function getLoadedProductCollection() 
+    public function getLoadedProductCollection()
     {
         $count = $this->getColumnCount();
         //Mage::log($count);
@@ -17,7 +17,7 @@ class Blackbird_Merlinsearch_Block_Vrec_List extends Mage_Catalog_Block_Product_
         return $this->_merlinProducts;
     }
 
-    public function getToolbarHtml() 
+    public function getToolbarHtml()
     {
         return '';
     }
