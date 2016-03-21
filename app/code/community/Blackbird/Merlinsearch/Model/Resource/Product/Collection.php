@@ -164,7 +164,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
 
         //VisibilityFilter
-        $s->addFilter(new \Merlin\Filter("visibility", '=', "catalog, search"));
+        //$s->addFilter(new \Merlin\Filter("visibility", '=', "catalog, search"));
 
         if (isset($this->_orderBy)) {
             $s->addSort(new \Merlin\Sort($this->_orderBy, $this->_orderDir));
