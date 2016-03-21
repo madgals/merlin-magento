@@ -6,11 +6,11 @@ class Blackbird_Merlinsearch_Frontend_CatalogSearch_ResultController extends Mag
     const ORDER_BY_GET_PARAM_NAME = 'order';
     const ORDER_DIR_GET_PARAM_NAME = 'dir';
     const PAGE_GET_PARAM_NAME = 'p';
-    
+
     public function indexAction()
     {
         //Mage::log('Mage_CatalogSearch_ResultController indexAction()');
-        
+
         $query = Mage::helper('catalogsearch')->getQuery();
         /* @var $query Mage_CatalogSearch_Model_Query */
 
@@ -41,7 +41,7 @@ class Blackbird_Merlinsearch_Frontend_CatalogSearch_ResultController extends Mag
             }
 
             Mage::helper('catalogsearch')->checkNotes();
-            
+
             //Mage::log(print_r($query->getData(), true));
 //            foreach($query->getResultCollection() as $prod){
 //                Mage::log(print_r($prod->getData(), true));

@@ -7,7 +7,7 @@ class Blackbird_Merlinsearch_Block_Layer_Filter_Attribute extends Mage_Catalog_B
         parent::__construct();
         $this->_filterModelName = 'merlinsearch/layer_filter_attribute';
     }
-    
+
     protected function _prepareFilter()
     {
         $this->_filter->setAttributeModel($this->getAttributeModel());

@@ -7,7 +7,7 @@ require_once(Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Merlin' . DIRECTOR
  * Uses Merlin PHP Library to handle updates, deletes, and add
  *
  * Mapping class is used to determine which attributes to upload and which get mapped to reserved fields
- * 
+ *
  */
 
 
@@ -18,8 +18,8 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
      */
     const EVENT_MATCH_RESULT_KEY = 'merlinsearch_match_result';
     const BATCH_SIZE = 500;
-    
-    
+
+
     /**
      * @var array
      */
@@ -34,7 +34,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     /*
     * Generate Mapping for Blackbird Reserved Fields
     */
-    
+
     // protected $_mapping = new Blackbird_Merlinsearch_Helper_Mapping();
 
     /**
@@ -146,12 +146,12 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
         Mage::app()->setCurrentStore('default');
         //Mage::log(Mage::app()->getStore()->getId());
-		
+
     	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
         $attributes = $mapping->getProductAttributesList();
         $attributes[] = "visibility";
-        $temp_attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection(); 
-        
+        $temp_attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
+
         // $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
         $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
         $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
@@ -173,7 +173,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
             $products->load();
 
             foreach ($products as $prod) {
-                if ($prod->isSalable()){  
+                if ($prod->isSalable()){
                     if ($prod->isConfigurable()) {
                         $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
                         //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
@@ -232,7 +232,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
 
     private function product2array($product, $mapping, $attributes, $parent = null) {
-	
+
         $params = array();
         if ($parent != null) {
             $params['parent_id'] = "pid" . $parent->getId();
@@ -251,7 +251,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 	        $params += $this->attributes2array($product, $mapping, $attributes);
             $params += $this->productImages2array($product, $mapping);
         }
-        
+
 	    $params += array(
             'title' => $product->getName(),
             'description' => $product->getDescription(),
@@ -288,7 +288,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
         //ATTRIBUTE MAPPING TRUMPS ALL OTHER
 	    $params += $this->attributes2array($product, $mapping, $attributes);
-        
+
         return $params;
     }
 
@@ -300,7 +300,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                 if ($mapping->isValidPair("images", $images)){
                     $params['images'] = array_values($images);
                 }
-                
+
                 $thumbnails = array($product->getSmallImageUrl());
                 if ($mapping->isValidPair("thumbnails", $thumbnails)){
                     $params['thumbnails'] = array_values($thumbnails);
@@ -313,7 +313,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
     }
 
     private function attributes2array($product, $mapping, $attributes) {
-	    $attributeMap = $mapping->getProductAttributesDict();		
+	    $attributeMap = $mapping->getProductAttributesDict();
         //$attributes = $product->getAttributes();
         //$attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
         $params = array();

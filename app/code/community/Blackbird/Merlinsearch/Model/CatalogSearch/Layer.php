@@ -17,7 +17,7 @@ class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearc
 
         if(!isset($this->_merlinProducts)){
             //Mage::log('Blackbird_Merlinsearch_Model_CatalogSearch_Layer !isset($this->_merlinProducts');
-            
+
             $this->_merlinProducts = new Blackbird_Merlinsearch_Model_Resource_Product_Collection();
             //Mage::log('!isset($this->_merlinProducts)'. !isset($this->_merlinProducts));
             $this->_merlinProducts->setQuery(Mage::helper('catalogsearch')->getQuery()->getQueryText());
@@ -28,9 +28,9 @@ class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearc
                 $this->_merlinProducts->addFacetableAttribute($attribute->getAttributeCode());
             }
         }
-        
+
         return $this->_merlinProducts;
-        
+
 //        $this->getMerlinCollection(Mage::helper('catalogsearch')->getQuery()->getQueryText());
 //
 //        if (isset($this->_productCollections[$this->getCurrentCategory()->getId()])) {
@@ -102,7 +102,7 @@ class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearc
     protected function _prepareAttribute($attribute) {
         return $attribute;
     }
-    
+
     public function getFilterableAttributes()
     {
         //Mage::log('getFilterableAttributes');
@@ -119,7 +119,7 @@ class Blackbird_Merlinsearch_Model_CatalogSearch_Layer extends Mage_CatalogSearc
             //Mage::log($collection->getSize());
         }
 
-        
+
         return $this->_filterableAtributes;
     }
 

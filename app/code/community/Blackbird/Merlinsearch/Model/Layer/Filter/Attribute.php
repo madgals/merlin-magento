@@ -1,17 +1,19 @@
 <?php
 
-class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_Model_Layer_Filter_Abstract {
-
+class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_Model_Layer_Filter_Abstract
+{
     const RESET_VALUE = '-';
 
     protected $_appliedFilter = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->_requestVar = 'attribute';
     }
 
-    public function getResetValue() {
+    public function getResetValue()
+    {
         return self::RESET_VALUE;
     }
 
@@ -33,7 +35,8 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_M
      * @param   Varien_Object $filterBlock
      * @return  Mage_Catalog_Model_Layer_Filter_Attribute
      */
-    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock) {
+    public function apply(Zend_Controller_Request_Abstract $request, $filterBlock)
+    {
         $filter = $request->getParam($this->getRequestVar());
         //Mage::log('$filter:'.$filter);
         if (!$filter) {
@@ -42,11 +45,11 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_M
         if ($filter == self::RESET_VALUE) {
             return $this;
         }
-        
+
 
         //Mage::register('current_category_filter', $this->getCategory(), true);
         $attName = $this->getAttributeModel()->getAttributeCode();
-        
+
         $this->_appliedFilter = $filter;
 
         $this->getLayer()->getProductCollection()->addAttributeFilter($attName, $filter);
@@ -76,12 +79,9 @@ class Blackbird_Merlinsearch_Model_Layer_Filter_Attribute extends Mage_Catalog_M
      * @return array
      */
     protected function _getItemsData() {
-        if($this->_appliedFilter != null){
+        if ($this->_appliedFilter != null){
             return array();
         }
-        return $this->getLayer()->getProductCollection()->getAttributeFacet(
-                $this->getAttributeModel()->getAttributeCode()
-                );
+        return $this->getLayer()->getProductCollection()->getAttributeFacet($this->getAttributeModel()->getAttributeCode());
     }
-
 }

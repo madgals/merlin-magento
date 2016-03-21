@@ -11,19 +11,19 @@ require_once(Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Merlin' . DIRECTOR
 
 
 class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Catalog_Model_Resource_Product_Collection {
-	
+
     protected $_query;
     protected $_vrecId;
     protected $_vrecNum;
-    
+
     protected $_attributeFiltersMax;
     protected $_attributeFiltersMin;
-    
+
     protected $_facetableHistAttributes;
     protected $_facetableEnumAttributes;
     protected $_enumFacets;
     protected $_histFacets;
-    
+
     protected $_items;
     protected $_totalCount;
     protected $_isLoaded = false;
@@ -56,7 +56,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     public function getCurPage($displacement = 0) {
         return $this->_curPage + $displacement;
     }
-    
+
     public function load() {
         if ($this->_isLoaded) {
             return;
@@ -69,16 +69,16 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
             $this->loadFromQuery();
         }
     }
-    
+
     public function loadVrec(){
         $engine = $this->getMerlinEngine();
         $v = new \Merlin\Vrec($this->_vrecId, null, $this->_vrecNum);
         $r = $engine->vrec($v);
-        
+
         if(!isset($r->results)){
             throw new Exception($r->msg);
         }
-        
+
         $this->_totalCount = $r->results->numfound;
         foreach ($r->results->hits as $prod) {
             $bprod = $this->translate($prod);
@@ -110,7 +110,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
             }
         }
     }
-   
+
     //Based on three character php header append
     private function getMagentoParentId($prod){
         $parent_id = $prod->parent_id;
@@ -120,9 +120,9 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
         return $prod->id;
     }
- 
+
     public function loadFromQuery() {
-        
+
         $engine = $this->getMerlinEngine();
         $s = (new \Merlin\Search($this->_query));
         $limit = $this->getPageSize();
@@ -134,7 +134,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         if (isset($page) && $page > 1) {
             $s->setStart(($page - 1) * $limit);
         }
-    
+
 	    $s->setGroup(new \Merlin\Group('parent_id'));
 
 
@@ -144,7 +144,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
             $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMax[$att]));
             } else {
             Mage::log($val);
-            $s->addFacet(new \merlin\HistFacet($att, $val[0], $val[1], $val[2]));	
+            $s->addFacet(new \merlin\HistFacet($att, $val[0], $val[1], $val[2]));
             }
         }
 
@@ -167,7 +167,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
             throw new Exception($r->msg);
         }
 
-	
+
         foreach ($this->_facetableEnumAttributes as $att) {
         	$this->_setEnumFacet($r, $att);
 	}
@@ -176,13 +176,13 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
 		$this->_setHistFacet($r, $att);
 	}
 
-        
+
 	$this->_totalCount = $r->results->numfound;
     foreach ($r->results->hits as $prod) {
 	    $bprod = Mage::getModel('catalog/product')->load($this->getMagentoParentId($prod));
         $this->_items[$bprod->getEntityId()] = $bprod;
         }
-	
+
     }
 
     private function getMerlinEngine() {
@@ -265,9 +265,9 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     function addFacetableAttribute($_facetableAttribute) {
         if ( !in_array($_facetableAttribute, $this->_facetableEnumAttributes)){
             $this->_facetableEnumAttributes[] = $_facetableAttribute;
-        } 
+        }
     }
-    
+
     public function addAttributeFilter($name, $value){
         $this->_attributeEnumFilters[$name] = $value;
     }
