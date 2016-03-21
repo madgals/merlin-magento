@@ -181,6 +181,7 @@ class Blackbird_Merlinsearch_Helper_Mapping
                 $facets[] = $value;
             }
         }
+        return $facets;
     }
 
     public function isValidPair($field, $value)
