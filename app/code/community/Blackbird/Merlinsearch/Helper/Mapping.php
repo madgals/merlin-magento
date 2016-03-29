@@ -1,7 +1,13 @@
 <?php
 
+//This Class performs the mappings from Magento fields to Reserved Blackbird Field names and
+//Performs checks that the data is in the correct format
+//
+//This Class also establishes which fields will be faceted on in queries
+
 class Blackbird_Merlinsearch_Helper_Mapping
 {
+    // Proctected Values are reserved names for Blackbird Fields 
     protected $_reserved_fields = array(
         "id",
         "title",

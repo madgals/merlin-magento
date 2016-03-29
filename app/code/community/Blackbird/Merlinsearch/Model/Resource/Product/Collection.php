@@ -144,7 +144,8 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
 
 	    $s->setGroup(new \Merlin\Group('parent_id'));
-
+        
+        // Checks if filter is specified if not adds facet for field
         foreach ($this->_facetableHistAttributes as $att => $val) {
             if (isset($this->_attributeFiltersMax[$att])) {
                 $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMin[$att]));
@@ -234,27 +235,10 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         return $this->_totalCount;
     }
 
-    /*public function getSetIds()
-      {
-        $this->load();
-        $select = $this->getSelect();
-        $select->reset(Zend_Db_Select::COLUMNS);
-        $select->distinct(true);
-        $select->columns('attribute_set_id');
-        return $this->getConnection()->fetchCol($select);
-    }*/
-
-    /*protected function _buildClearSelect($select = null) {
-        if (is_null($select)) {
-            $select = clone $this->getSelect();
-        }
-        $select->reset(Zend_Db_Select::ORDER);
-        $select->reset(Zend_Db_Select::LIMIT_COUNT);
-        $select->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $select->reset(Zend_Db_Select::COLUMNS);
-
-        return $select;
-    }*/
+    public function getSetIds()
+    {
+        throw new Exception('Not implemented');
+    }
 
     public function addCountToCategories($categoryCollection)
     {
