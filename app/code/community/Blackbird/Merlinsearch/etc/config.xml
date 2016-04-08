@@ -27,7 +27,12 @@
         <models>
             <merlinsearch>
                 <class>Blackbird_Merlinsearch_Model</class>
+                <resourceModel>merlinsearch_resource</resourceModel>
             </merlinsearch>
+            <merlinsearch_resource>
+                <class>Blackbird_Merlinsearch_Model_Resource</class>
+            </merlinsearch_resource>
+            
             <catalogsearch>
                 <rewrite>
                     <layer>Blackbird_Merlinsearch_Model_CatalogSearch_Layer</layer>

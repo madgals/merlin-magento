@@ -1,23 +1,17 @@
 <?php
 
-//This Class performs the mappings from Magento fields to Reserved Blackbird Field names and
-//Performs checks that the data is in the correct format
-//
-//This Class also establishes which fields will be faceted on in queries
-
 class Blackbird_Merlinsearch_Helper_Mapping
 {
-    // Proctected Values are reserved names for Blackbird Fields 
     protected $_reserved_fields = array(
         "id",
         "title",
         "description",
         "price",
-		"images",
+	"images",
         "thumbnails",
         "sizes",
         "colors",
-		"tags",
+	"tags",
         "timestamp",
         "availability",
         "offer",
@@ -179,6 +173,8 @@ class Blackbird_Merlinsearch_Helper_Mapping
         $facets = array();
         foreach ($this->_facet_fields as $field) {
             $value = Mage::getStoreConfig('merlinsearch/merlinindex/' . $field);
+            $value = explode(',', $value);
+
             if (is_array($value)) {
                 foreach ($value as $val) {
                     $facets[] = $val;
