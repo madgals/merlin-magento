@@ -142,6 +142,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
     private function reindexMerlinData($id = null)
     {
+        set_time_limit(300);
         Mage::log('Merlinsearch reindexAll');
         //Mage::log(Mage::getBaseDir('lib').DIRECTORY_SEPARATOR.'Merlin'.DIRECTORY_SEPARATOR.'Merlin.php');
         //Mage::log(print_r($products, true));
@@ -149,37 +150,33 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         $merlin = $this->getMerlinEngine();
 
         Mage::app()->setCurrentStore('default');
-        //Mage::log(Mage::app()->getStore()->getId());
 
-    	$mapping = new Blackbird_Merlinsearch_Helper_Mapping();
+        Mage::log(Mage::app()->getStore()->getId());
+
+    	$mapping = Mage::helper('merlinsearch/mapping');
         $attributes = $mapping->getProductAttributesList();
         $attributes[] = "visibility";
         $temp_attributes = Mage::getSingleton('eav/config')->getEntityType(Mage_Catalog_Model_Product::ENTITY)->getAttributeCollection();
 
-        // $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect($attributes);
-        $products = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect("*");
-        $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
-        $products->setStore(Mage::app()->getStore()->getId());
-        $products->addStoreFilter(Mage::app()->getStore()->getId());
-        $products->addUrlRewrite();
-        $products->setPageSize(20);
-        if ($id != null) {
-            $products->addAttributeToFilter('entity_id', array('in' => array($id))); //REMOVE AS WELL
-        }
-
-        $pages = $products->getLastPageNumber();
         $currentPage = 1;
         $productsLoaded = 0;
         $batchLoaded = 0;
         $data = array();
+        
+        $limit = 100;
+        $offset = 0;
         do {
-            $products->setCurPage($currentPage);
-            $products->load();
+            $products = $this->_getProductCollection($id);
+            $products->getSelect()->limit($limit, $offset);
+                       
+            $offset += $limit;
 
             foreach ($products as $prod) {
+                
                 if ($prod->isSalable()) {
                     if ($prod->isConfigurable()) {
                         $childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $prod);
+ 
                         //$childProducts = $prod->getTypeInstance()->getUsedProducts(null, $prod);
                         foreach ($childProducts as $child) {
                             $data[] = $this->product2array($child, $mapping, $temp_attributes, $prod);
@@ -193,8 +190,8 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                     }
                 }
             }
-
-            if ($batchLoaded >= self::BATCH_SIZE || $currentPage >= $pages) {
+            
+            if ($batchLoaded >= self::BATCH_SIZE || !count($products)) {
                 $c = new \Merlin\Crud();
                 $c->addSubject(array('data' => $data));
                 $r = $merlin->upload($c);
@@ -202,12 +199,10 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                 $data = array();
                 Mage::log($r);
             }
-            Mage::log("Current Page: " . $currentPage . " Last Page: " . $pages);
-            set_time_limit(300);
+            Mage::log("Current Page: " . $currentPage);
+            
             $currentPage++;
-            //clear collection and free memory
-            $products->clear();
-        } while ($currentPage <= $pages);
+        } while (count($products));
 
         Mage::log("Reindex Finished!!");
 
@@ -216,6 +211,21 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
         }
         $merlin->close();
     }
+    
+    protected function _getProductCollection($id = null)
+    {        
+        $products = Mage::getResourceModel('catalog/product_collection')->addAttributeToSelect("*");
+        //??
+        $products->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);  
+        $products->setStore(Mage::app()->getStore()->getId());
+        $products->addStoreFilter(Mage::app()->getStore()->getId());
+        $products->addUrlRewrite();
+        if ($id != null) {
+            $products->addAttributeToFilter('entity_id', array('in' => array($id))); //REMOVE AS WELL
+        }
+        return $products;
+    }
+    
 
     private function getMerlinEngine()
     {
@@ -287,7 +297,7 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
 
 
         $ids = $product->getCategoryIds();
-
+        
         foreach ($ids as $catid) {
             $catname = Mage::getModel('catalog/category')->load($catid)->getName();
             if (!isset($params['category'])) {

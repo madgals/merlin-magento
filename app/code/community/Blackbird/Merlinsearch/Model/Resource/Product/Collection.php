@@ -11,47 +11,66 @@ require_once(Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Merlin' . DIRECTOR
 
 class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Catalog_Model_Resource_Product_Collection
 {
+
     protected $_query;
     protected $_vrecId;
     protected $_vrecNum;
-
     protected $_attributeFiltersMax;
     protected $_attributeFiltersMin;
-
-    protected $_facetableHistAttributes;
-    protected $_facetableEnumAttributes;
-    protected $_enumFacets;
-    protected $_histFacets;
-
-    protected $_items;
+//    protected $_facetableHistAttributes;
+//    protected $_facetableEnumAttributes;
+//    protected $_enumFacets;
+//    protected $_histFacets;
+//    protected $_items;
     protected $_totalCount;
     protected $_isLoaded = false;
     protected $_orderBy;
     protected $_orderDir;
 
-    function __construct($resource=null)
+    /**
+     *
+     * @var Blackbird_Merlinsearch_Model_Merlin_Engine 
+     */
+    protected $_engine;
+
+    /**
+     *
+     * @var Blackbird_Merlinsearch_Model_Merlin_Search 
+     */
+    protected $_search;
+
+    /**
+     *
+     * @var Blackbird_Merlinsearch_Model_Merlin_Result 
+     */
+    protected $_result;
+    //protected $_enumCounts;
+    //protected $_attributeLabels;
+    //protected $_categoryNames;
+
+    /**
+     *
+     * @var Blackbird_Merlinsearch_Model_Facet
+     */
+    protected $_facet;
+
+    function __construct($resource = null)
     {
         parent::__construct($resource);
-        $mapping = new Blackbird_Merlinsearch_Helper_Mapping();
+        $mapping = Mage::helper('merlinsearch/mapping');
 
-        $this->_facetableEnumAttributes = $mapping->getEnumFacets();  //array("category");
-        $this->_facetableHistAttributes = array("price" => array(0, 500, 100));
         $this->_attributeEnumFilters = array();
-	    $this->_attributeFiltersMin = array();
-	    $this->_attributeFiltersMax = array();
-        $this->_enumFacets = array();
-        $this->_histFacets = array();
-        $this->_items = array();
-        $this->_curPage = 1;
-    }
+        $this->_attributeFiltersMin = array();
+        $this->_attributeFiltersMax = array();
+//        $this->_enumFacets = array();
+//        $this->_histFacets = array();
+//        //$this->_items = array();
 
-    function setOrder($_orderBy, $_orderDir)
-    {
-        if ($_orderBy == 'relevance') {
-            return;
-        }
-        $this->_orderBy = $_orderBy;
-        $this->_orderDir = $_orderDir;
+        $this->_curPage = Mage::app()->getRequest()->getParam('p');
+        $this->_orderBy = Mage::app()->getRequest()->getParam('order');
+        $this->_orderDir = Mage::app()->getRequest()->getParam('dir');
+
+        $this->_facet = Mage::getModel('merlinsearch/facet');
     }
 
     public function getCurPage($displacement = 0)
@@ -62,14 +81,13 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     public function load()
     {
         if ($this->_isLoaded) {
-            return;
-        } else {
-            $this->_isLoaded = true;
+            return $this;
         }
-
+        $this->_isLoaded = true;
         if (isset($this->_vrecId)) {
             $this->loadVrec();
-        } else{
+        }
+        else {
             $this->loadFromQuery();
         }
     }
@@ -91,153 +109,185 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
     }
 
-    private function _setEnumFacet($r, $att)
-    {
-        if (isset($r->results->facets->enums->$att)) {
-            foreach ($r->results->facets->enums->$att->enums as $enum) {
-                $this->_enumFacets[$att][] = array(
-                    'label' => $enum->term,
-                    'value' => $enum->term,
-                    'count' => $enum->count,
-                );
-            }
-        }
-    }
-
-    private function _setHistFacet($r, $att)
-    {
-        if (isset($r->results->facets->histograms->$att)) {
-            foreach ($r->results->facets->histograms->$att->histograms as $hist) {
-                $this->_histFacet[$att] = array(
-                    'from' => $hist->from,
-                    'to' => $hist->to,
-                    'value' => $hist->from . '-' . $hist->to,
-                    'count' => $hist->count,
-                );
-            }
-        }
-    }
-
     //Based on three character php header append
     private function getMagentoParentId($prod)
     {
         $parent_id = $prod->parent_id;
-        if (substr($parent_id,0, 3) === "pid") {
+        if (substr($parent_id, 0, 3) === "pid") {
             $id = substr($parent_id, 3);
             return $id;
         }
         return $prod->id;
     }
 
-    public function loadFromQuery()
+    protected function _addPagination()
     {
-        $engine = $this->getMerlinEngine();
-        $s = (new \Merlin\Search($this->_query));
-        $limit = $this->getPageSize();
-        if (!$limit) {
-            $limit = 12;
-        }
-        $s->setNum($limit);
         $page = $this->getCurPage();
-        if (isset($page) && $page > 1) {
-            $s->setStart(($page - 1) * $limit);
-        }
+        $limit = $this->getPageSize();
+        $this->_search->addPagination($page, $limit);
+    }
 
-	    $s->setGroup(new \Merlin\Group('parent_id'));
-        
-        // Checks if filter is specified if not adds facet for field
-        foreach ($this->_facetableHistAttributes as $att => $val) {
+    protected function _addHistAttributes()
+    {
+        foreach ($this->_facet->getFacetableHistAttributes() as $att => $val) {
             if (isset($this->_attributeFiltersMax[$att])) {
-                $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMin[$att]));
-                $s->addFilter(new \Merlin\Filter($att, '>', $this->_attributeFiltersMax[$att]));
-            } else {
-                Mage::log($val);
-                $s->addFacet(new \merlin\HistFacet($att, $val[0], $val[1], $val[2]));
+                if (!isset($this->_attributeFiltersMin[$att]) || !$this->_attributeFiltersMin[$att]) {
+                    $this->_attributeFiltersMin[$att] = 0;
+                }
+                $this->_search->addFilter($att, '>', $this->_attributeFiltersMin[$att]);
+                $this->_search->addFilter($att, '<', $this->_attributeFiltersMax[$att]);
+            }
+            else {
+                $this->_search->addHistFacet($att, $val[0], $val[1], $val[2]);
             }
         }
+    }
 
-        foreach ($this->_facetableEnumAttributes as $att) {
+    protected function _addEnumAttributes()
+    {
+        foreach ($this->_facet->getFacetableEnumAttributes() as $att) {
             if (isset($this->_attributeEnumFilters[$att])) {
-                $s->addFilter(new \Merlin\Filter($att, '=', $this->_attributeFilters[$att]));
-            } else {
-                $s->addFacet(new \Merlin\EnumFacet($att, 5));
+                $this->_search->addFilter($att, '=', $this->_attributeEnumFilters[$att]);
+            }
+            else {
+                $this->_search->addEnumFacet($att, 20);
             }
         }
+    }
 
+    protected function _addSort()
+    {
+        $this->_search->setOrder($this->_orderBy, $this->_orderDir);
+    }
+
+    protected function _addFilters()
+    {
+        foreach ($this->_facet->getFacetableEnumAttributes()as $attribute) {
+            if ($value = Mage::app()->getRequest()->getParam($attribute)) {
+                $this->addAttributeFilter($attribute, $value);
+            }
+        }
+        $categoryVarName = Mage::getModel('merlinsearch/layer_filter_category')->getRequestVar();
+        if ($value = Mage::app()->getRequest()->getParam($categoryVarName)) {
+            $this->setCategoryFilter($value);
+        }
+
+        $categoryVarName = Mage::getModel('merlinsearch/layer_filter_price')->getRequestVar();
+        if ($value = Mage::app()->getRequest()->getParam($categoryVarName)) {
+            $priceValues = explode('-', $value);
+            if (is_array($priceValues) && count($priceValues) == 2) {
+                $this->setPriceFilterMin($priceValues[0]);
+                $this->setPriceFilterMax($priceValues[1]);
+            }
+        }
+    }
+
+    protected function _initQuerySearch()
+    {
+        $this->_engine = Mage::getModel('merlinsearch/merlin_engine');
+        $this->_search = Mage::getModel('merlinsearch/merlin_search', $this->_query);
+        $this->_addFilters();
+        $this->_addHistAttributes();
+        $this->_addEnumAttributes();
+    }
+
+    protected function _addAdditionalFilters()
+    {
         //VisibilityFilter
         //$s->addFilter(new \Merlin\Filter("visibility", '=', "catalog, search"));
-
-        if (isset($this->_orderBy)) {
-            $s->addSort(new \Merlin\Sort($this->_orderBy, $this->_orderDir));
-        }
-        $r = $engine->search($s);
-        if (!isset($r->results)) {
-            throw new Exception($r->msg);
-        }
-
-        foreach ($this->_facetableEnumAttributes as $att) {
-        	$this->_setEnumFacet($r, $att);
-	    }
-
-        foreach ($this->_facetableHistAttributes as $att => $val) {
-            $this->_setHistFacet($r, $att);
-	    }
-
-        $this->_totalCount = $r->results->numfound;
-        foreach ($r->results->hits as $prod) {
-            $bprod = Mage::getModel('catalog/product')->load($this->getMagentoParentId($prod));
-            $this->_items[$bprod->getEntityId()] = $bprod;
-        }
     }
 
-    private function getMerlinEngine()
+    protected function _sendRequest()
     {
-        return new \Merlin\MerlinSearch(
-            trim(Mage::getStoreConfig('merlinsearch/merlinconfig/company')),
-            trim(Mage::getStoreConfig('merlinsearch/merlinconfig/environment')),
-            trim(Mage::getStoreConfig('merlinsearch/merlinconfig/instance'))
-        );
+        $this->_result = $this->_engine->search($this->_search);
+        if (!$this->_result->getResults()) {
+            Mage::throwException($this->_result->getMsg());
+        }
     }
 
+    protected function _initEnumFacets()
+    {
+        $this->_facet->initEnumFacets($this->_result);
+    }
+
+    protected function _initHistFacets()
+    {
+        $this->_facet->initHistFacets($this->_result);
+    }
+
+    public function loadFromQuery()
+    {
+        $this->_initQuerySearch();
+        $this->_sendRequest();
+        $this->_initEnumFacets();
+
+        $this->_initQuerySearch();
+        $this->_addPagination();
+        $this->_addSort();
+        $this->_search->setGroup('parent_id');
+        $this->_sendRequest();
+        $this->_initHistFacets();
+
+        $this->_loadMagentoItems();
+
+        parent::load();
+    }
+
+    protected function _loadMagentoItems()
+    {
+        $this->_totalCount = $this->_result->getNumFound();
+
+        $ids = array();
+        foreach ($this->_result->getHits() as $prod) {
+            $ids[] = $this->getMagentoParentId($prod);
+        }
+        $collection = Mage::getResourceModel('catalog/product_collection');
+        $collection->addFieldToFilter('entity_id', array('in' => $ids));
+        if (count($ids)) {
+            $collection->getSelect()->order(new Zend_Db_Expr('FIELD(e.entity_id, ' . implode(',', $ids) . ')'));
+        }
+        $this->addAttributeToSelect('*');
+        $this->_select = $collection->getSelect();
+    }
+
+//    protected function getMerlinEngine()
+//    {
+//        return new \Merlin\MerlinSearch(
+//                trim(Mage::getStoreConfig('merlinsearch/merlinconfig/company')), 
+//                trim(Mage::getStoreConfig('merlinsearch/merlinconfig/environment')), 
+//                trim(Mage::getStoreConfig('merlinsearch/merlinconfig/instance'))
+//        );
+//    }
+
+    public function getFilterLabel($attributeCode, $filter)
+    {
+        if(!preg_match('/^[a-z0-9\&\.\,-_\s]$/', $filter))
+        return $this->_facet->getAttributeLabel($attributeCode, $filter);
+    }
+    
     public function getCategories()
     {
-        $this->load();
-        return $this->_enumFacets['category'];
+        return $this->_facet->getAttributeFacet('category');
     }
 
-    public function getAttributeFacet($attName)
+    public function getAttributeFacet($attributeCode)
     {
-        $this->load();
-        return $this->_enumFacets[$attName];
+        return $this->_facet->getAttributeFacet($attributeCode);
     }
 
     public function getPriceHist()
     {
-        $this->load();
-        return $this->_histFacets['price'];
-    }
-
-    protected function _getSelectCountSql($select = null, $resetLeftJoins = true)
-    {
-        $this->load();
-        return $this->_totalCount;
+        return $this->_facet->getAttributeHist('price');
     }
 
     public function getSize()
     {
-        $this->load();
         return $this->_totalCount;
     }
 
     public function getProductCountSelect()
     {
-        $this->load();
         return $this->_totalCount;
-    }
-
-    public function getSetIds()
-    {
-        throw new Exception('Not implemented');
     }
 
     public function addCountToCategories($categoryCollection)
@@ -262,14 +312,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
 
     function setPriceFilterMax($_priceFilter)
     {
-	    $this->_attributeFiltersMax['price'] = $_priceFilter;
-    }
-
-    function addFacetableAttribute($_facetableAttribute)
-    {
-        if (!in_array($_facetableAttribute, $this->_facetableEnumAttributes)) {
-            $this->_facetableEnumAttributes[] = $_facetableAttribute;
-        }
+        $this->_attributeFiltersMax['price'] = $_priceFilter;
     }
 
     public function addAttributeFilter($name, $value)
@@ -282,4 +325,5 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         $this->_vrecId = $_vrecId;
         $this->_vrecNum = $num;
     }
+
 }
