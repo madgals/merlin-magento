@@ -200,6 +200,8 @@ class Blackbird_Merlinsearch_Model_Indexer_Merlinindexer extends Mage_Index_Mode
                 Mage::log($r);
             }
             Mage::log("Current Page: " . $currentPage);
+            // Prevents Timeouts on large catalogs by reseting PHP time state
+            set_time_limit(300);
             
             $currentPage++;
         } while (count($products));
