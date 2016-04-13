@@ -7,11 +7,11 @@ class Blackbird_Merlinsearch_Helper_Mapping
         "title",
         "description",
         "price",
-	"images",
+        "images",
         "thumbnails",
         "sizes",
         "colors",
-	"tags",
+        "tags",
         "timestamp",
         "availability",
         "offer",
@@ -131,8 +131,6 @@ class Blackbird_Merlinsearch_Helper_Mapping
         )
     );
 
-
-
     public function getReservedFields()
     {
         return $this->_reserved_fields;
@@ -173,14 +171,11 @@ class Blackbird_Merlinsearch_Helper_Mapping
         $facets = array();
         foreach ($this->_facet_fields as $field) {
             $value = Mage::getStoreConfig('merlinsearch/merlinindex/' . $field);
-            $value = explode(',', $value);
-
-            if (is_array($value)) {
+            if (!empty($value)) {
+                $value = explode(',', $value);
                 foreach ($value as $val) {
                     $facets[] = $val;
                 }
-            } else if ($value) {
-                $facets[] = $value;
             }
         }
         return $facets;
@@ -218,9 +213,7 @@ class Blackbird_Merlinsearch_Helper_Mapping
             }
         }
         return $valid;
-
     }
-
 
     private function isGenderString($value)
     {
