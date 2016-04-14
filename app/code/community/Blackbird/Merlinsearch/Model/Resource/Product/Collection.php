@@ -89,7 +89,9 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
         else {
             $this->loadFromQuery();
+            $this->addAttributeToSelect('*');
         }
+        return parent::load();
     }
 
     public function loadVrec()
@@ -229,8 +231,6 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         $this->_initHistFacets();
 
         $this->_loadMagentoItems();
-
-        parent::load();
     }
 
     protected function _loadMagentoItems()
