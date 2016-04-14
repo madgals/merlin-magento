@@ -89,8 +89,8 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         }
         else {
             $this->loadFromQuery();
-            $this->addAttributeToSelect('*');
         }
+        $this->addAttributeToSelect('*');
         return parent::load();
     }
 
