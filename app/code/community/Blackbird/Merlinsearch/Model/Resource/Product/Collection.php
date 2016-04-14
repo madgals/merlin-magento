@@ -125,8 +125,12 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
     {
         $page = $this->getCurPage();
         $limit = $this->getPageSize();
+        if (!$limit) {
+            $limit = Mage::getStoreConfig('catalog/frontend/grid_per_page');
+        }
         $this->_search->addPagination($page, $limit);
     }
+
 
     protected function _addHistAttributes()
     {
@@ -324,5 +328,4 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         $this->_vrecId = $_vrecId;
         $this->_vrecNum = $num;
     }
-
 }
