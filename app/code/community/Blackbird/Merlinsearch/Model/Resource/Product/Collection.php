@@ -90,7 +90,6 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         else {
             $this->loadFromQuery();
         }
-        $this->addAttributeToSelect('*');
         return parent::load();
     }
 
@@ -246,7 +245,7 @@ class Blackbird_Merlinsearch_Model_Resource_Product_Collection extends Mage_Cata
         if (count($ids)) {
             $collection->getSelect()->order(new Zend_Db_Expr('FIELD(e.entity_id, ' . implode(',', $ids) . ')'));
         }
-        $this->addAttributeToSelect('*');
+        $collection->addAttributeToSelect('*');
         $this->_select = $collection->getSelect();
     }
 
