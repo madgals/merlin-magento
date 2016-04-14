@@ -26,7 +26,6 @@ class Blackbird_Merlinsearch_Adminhtml_Model_System_Config_Source_Product_Attrib
             $options[] = $item;
         }
         usort($options, "compare_label");
-        $options[] = array('value' => null, 'label' => null);
         return $options;
     }
 }
